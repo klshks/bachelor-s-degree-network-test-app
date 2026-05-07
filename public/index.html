@@ -3,41 +3,53 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Network Test App</title>
+  <title>Network Test</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main class="app">
-    <section class="card">
-      <h1>Аналіз параметрів мережі</h1>
-      <p>Веб-застосунок для вимірювання latency, jitter та throughput.</p>
+    <section class="network">
+        <img src="logo/logo.png" alt="logo">
 
-      <button id="startBtn">Почати тест</button>
+      <h1 class="network__title">Network Test</h1>
+      <p class="network__subtitle">Check your internet connection performance</p>
 
-      <div class="results">
-        <div class="result">
-          <span>Latency</span>
-          <strong id="latency">— ms</strong>
-        </div>
+      <button class="network__start" id="startBtn" type="button">
+        <span class="network__play">▶</span>
+        <span class="network__start-text">START</span>
+      </button>
 
-        <div class="result">
-          <span>Jitter</span>
-          <strong id="jitter">— ms</strong>
-        </div>
-
-        <div class="result">
-          <span>Throughput</span>
-          <strong id="throughput">— Mbps</strong>
-        </div>
-
-        <div class="result">
-          <span>Packet Loss</span>
-          <strong id="packetLoss">— %</strong>
-        </div>
+      <div class="network__results">
+        <article class="network__card">
+          <div class="network__card-icon network__card-icon--blue">◷</div>
+          <p class="network__label">LATENCY</p>
+          <strong class="network__value" id="latency">—</strong>
+          <span class="network__unit">ms</span>
+        </article>
+      
+        <article class="network__card">
+          <div class="network__card-icon network__card-icon--green">↓</div>
+          <p class="network__label">SPEED</p>
+          <strong class="network__value" id="throughput">—</strong>
+          <span class="network__unit">Mbps</span>
+        </article>
+      
+        <article class="network__card">
+          <div class="network__card-icon network__card-icon--orange">≈</div>
+          <p class="network__label">JITTER</p>
+          <strong class="network__value" id="jitter">—</strong>
+          <span class="network__unit">ms</span>
+        </article>
+      
+        <article class="network__card">
+          <div class="network__card-icon network__card-icon--red">%</div>
+          <p class="network__label">PACKET LOSS</p>
+          <strong class="network__value" id="packetLoss">—</strong>
+          <span class="network__unit">%</span>
+        </article>
       </div>
 
-      <h2>Історія вимірювань</h2>
-      <ul id="history"></ul>
+      <p class="network__note">Results update after each test</p>
     </section>
   </main>
 
