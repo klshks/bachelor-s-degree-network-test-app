@@ -1,0 +1,12 @@
+{
+    "name": "network-test-app",
+    "version": "1.0.0",
+    "description": "Web application for network parameter analysis",
+    "main": "server.js",
+    "scripts": {
+      "start": "node server.js"
+    },
+    "dependencies": {
+      "express": "^4.18.2"
+    }
+  }

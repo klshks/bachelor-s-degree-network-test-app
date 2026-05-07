@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Network Test App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app">
+    <section class="card">
+      <h1>Аналіз параметрів мережі</h1>
+      <p>Веб-застосунок для вимірювання latency, jitter та throughput.</p>
+
+      <button id="startBtn">Почати тест</button>
+
+      <div class="results">
+        <div class="result">
+          <span>Latency</span>
+          <strong id="latency">— ms</strong>
+        </div>
+
+        <div class="result">
+          <span>Jitter</span>
+          <strong id="jitter">— ms</strong>
+        </div>
+
+        <div class="result">
+          <span>Throughput</span>
+          <strong id="throughput">— Mbps</strong>
+        </div>
+
+        <div class="result">
+          <span>Packet Loss</span>
+          <strong id="packetLoss">— %</strong>
+        </div>
+      </div>
+
+      <h2>Історія вимірювань</h2>
+      <ul id="history"></ul>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
