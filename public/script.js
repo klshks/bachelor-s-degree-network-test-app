@@ -14,8 +14,14 @@ async function runNetworkTest() {
   startText.textContent = 'TESTING...';
 
   try {
-    const pingResults = await measureLatency(10);
-    const throughput = await measureThroughput();
+    const isServerAvailable = await checkServer();
+
+    if (!isServerAvailable) {
+      throw new Error('Server is not available');
+    }
+
+    const pingResults = await measureLatency(20);
+    const throughput = await measureThroughput(4, 10);
 
     const successfulPings = pingResults.filter((item) => item !== null);
     const lostPackets = pingResults.length - successfulPings.length;
@@ -31,7 +37,7 @@ async function runNetworkTest() {
 
     addHistoryItem(latency, jitter, throughput, packetLoss);
   } catch (error) {
-    console.error('Network test error:', error);
+    console.error(error);
 
     latencyEl.textContent = '0.00';
     jitterEl.textContent = '0.00';
@@ -43,6 +49,16 @@ async function runNetworkTest() {
   }
 }
 
+async function checkServer() {
+  try {
+    const response = await fetchWithTimeout(`/ping?nocache=${Date.now()}`, 3000);
+
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
 async function measureLatency(count) {
   const results = [];
 
@@ -50,7 +66,10 @@ async function measureLatency(count) {
     const startTime = performance.now();
 
     try {
-      const response = await fetch(`/ping?nocache=${Date.now()}-${i}`);
+      const response = await fetchWithTimeout(
+        `/ping?nocache=${Date.now()}-${i}`,
+        3000
+      );
 
       if (!response.ok) {
         results.push(null);
@@ -60,31 +79,66 @@ async function measureLatency(count) {
       const endTime = performance.now();
 
       results.push(endTime - startTime);
-    } catch (error) {
+    } catch {
       results.push(null);
     }
+
+    await delay(100);
   }
 
   return results;
 }
 
-async function measureThroughput() {
+async function measureThroughput(parallelRequests = 4, fileSizeMb = 10) {
   const startTime = performance.now();
 
-  const response = await fetch(`/download?nocache=${Date.now()}`);
+  const requests = [];
+
+  for (let i = 0; i < parallelRequests; i++) {
+    requests.push(downloadTestFile(fileSizeMb, i));
+  }
+
+  const sizes = await Promise.all(requests);
+
+  const endTime = performance.now();
+
+  const totalBytes = sizes.reduce((sum, size) => sum + size, 0);
+  const totalBits = totalBytes * 8;
+  const durationSeconds = (endTime - startTime) / 1000;
+
+  return totalBits / durationSeconds / 1_000_000;
+}
+
+async function downloadTestFile(fileSizeMb, index) {
+  const response = await fetchWithTimeout(
+    `/download?size=${fileSizeMb}&nocache=${Date.now()}-${index}`,
+    15000
+  );
 
   if (!response.ok) {
-    throw new Error('Download test failed');
+    throw new Error('Download failed');
   }
 
   const data = await response.blob();
 
-  const endTime = performance.now();
+  return data.size;
+}
 
-  const durationSeconds = (endTime - startTime) / 1000;
-  const sizeBits = data.size * 8;
+async function fetchWithTimeout(url, timeout) {
+  const controller = new AbortController();
 
-  return sizeBits / durationSeconds / 1_000_000;
+  const timer = setTimeout(() => {
+    controller.abort();
+  }, timeout);
+
+  try {
+    return await fetch(url, {
+      signal: controller.signal,
+      cache: 'no-store',
+    });
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 function calculateAverage(values) {
@@ -125,4 +179,8 @@ function addHistoryItem(latency, jitter, throughput, packetLoss) {
     `Packet Loss: ${packetLoss.toFixed(2)} %`;
 
   historyEl.prepend(item);
+}
+
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
