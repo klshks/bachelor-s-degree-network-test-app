@@ -79,6 +79,38 @@
     transform: none;
   }
   
+  .network__start {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .network__chart {
+    margin-bottom: 36px;
+    padding: 20px;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+  }
+
+  .network__progress {
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 6px solid transparent;
+    border-top-color: #2563eb;
+    opacity: 0;
+  }
+  
+  .network__start.testing .network__progress {
+    opacity: 1;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
   .network__play {
     margin-left: 8px;
     margin-bottom: 20px;

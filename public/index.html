@@ -15,6 +15,8 @@
       <p class="network__subtitle">Check your internet connection performance</p>
 
       <button class="network__start" id="startBtn" type="button">
+        <div class="network__progress"></div>
+
         <span class="network__play">▶</span>
         <span class="network__start-text">START</span>
       </button>
@@ -49,10 +51,15 @@
         </article>
       </div>
 
+      <div class="network__chart">
+        <canvas id="latencyChart"></canvas>
+      </div>
+
       <p class="network__note">Results update after each test</p>
     </section>
   </main>
 
   <script src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>

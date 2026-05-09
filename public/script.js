@@ -6,11 +6,30 @@ const jitterEl = document.getElementById('jitter');
 const throughputEl = document.getElementById('throughput');
 const packetLossEl = document.getElementById('packetLoss');
 const historyEl = document.getElementById('history');
+const chartCtx = document.getElementById('latencyChart');
+
+const latencyChart = new Chart(chartCtx, {
+  type: 'line',
+  data: {
+    labels: [],
+    datasets: [{
+      label: 'Latency (ms)',
+      data: [],
+      borderColor: '#2563eb',
+      tension: 0.3,
+    }],
+  },
+  options: {
+    responsive: true,
+    animation: true,
+  },
+});
 
 startBtn.addEventListener('click', runNetworkTest);
 
 async function runNetworkTest() {
   startBtn.disabled = true;
+  startBtn.classList.add('testing');
   startText.textContent = 'TESTING...';
 
   try {
@@ -35,6 +54,7 @@ async function runNetworkTest() {
     const packetLoss = (lostPackets / pingResults.length) * 100;
 
     latencyEl.textContent = latency.toFixed(2);
+    updateChart(latency);
     jitterEl.textContent = jitter.toFixed(2);
     throughputEl.textContent = throughput.toFixed(2);
     packetLossEl.textContent = packetLoss.toFixed(2);
@@ -49,6 +69,7 @@ async function runNetworkTest() {
     packetLossEl.textContent = '100.00';
   } finally {
     startBtn.disabled = false;
+    startBtn.classList.remove('testing');
     startText.textContent = 'START';
   }
 }
@@ -124,7 +145,7 @@ async function downloadTestFile(fileSizeMb, index) {
   }
 
   const data = await response.blob();
-  
+
   if (data.size === 0) {
     throw new Error('Empty response');
   }
@@ -192,3 +213,17 @@ function addHistoryItem(latency, jitter, throughput, packetLoss) {
 function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+function updateChart(latency) {
+    const time = new Date().toLocaleTimeString();
+  
+    latencyChart.data.labels.push(time);
+    latencyChart.data.datasets[0].data.push(latency);
+  
+    if (latencyChart.data.labels.length > 10) {
+      latencyChart.data.labels.shift();
+      latencyChart.data.datasets[0].data.shift();
+    }
+  
+    latencyChart.update();
+  }
