@@ -21,7 +21,11 @@ async function runNetworkTest() {
     }
 
     const pingResults = await measureLatency(8);
-    const throughput = await measureThroughput(2, 3);
+    const isMobile = window.innerWidth < 700;
+
+    const throughput = isMobile
+        ? await measureThroughput(1, 1)
+        : await measureThroughput(2, 2);
 
     const successfulPings = pingResults.filter((item) => item !== null);
     const lostPackets = pingResults.length - successfulPings.length;
@@ -120,6 +124,10 @@ async function downloadTestFile(fileSizeMb, index) {
   }
 
   const data = await response.blob();
+  
+  if (data.size === 0) {
+    throw new Error('Empty response');
+  }
 
   return data.size;
 }
