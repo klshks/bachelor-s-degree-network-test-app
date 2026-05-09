@@ -20,8 +20,8 @@ async function runNetworkTest() {
       throw new Error('Server is not available');
     }
 
-    const pingResults = await measureLatency(20);
-    const throughput = await measureThroughput(4, 10);
+    const pingResults = await measureLatency(8);
+    const throughput = await measureThroughput(2, 3);
 
     const successfulPings = pingResults.filter((item) => item !== null);
     const lostPackets = pingResults.length - successfulPings.length;
@@ -83,7 +83,7 @@ async function measureLatency(count) {
       results.push(null);
     }
 
-    await delay(100);
+    await delay(30);
   }
 
   return results;
